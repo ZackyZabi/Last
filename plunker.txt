@@ -1,0 +1,507 @@
+<!DOCTYPE html><script>
+function* generateSequence() {
+  yield 1;
+  yield 2;
+  yield 3;
+}
+
+let generator = generateSequence();
+
+for(let done of generator) {
+  alert(done); // 1, then 2
+}
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+function* generateSequence() {
+  yield 1;
+  yield 2;
+  return 3;
+}
+
+let generator = generateSequence();
+
+let one = generator.next();
+
+alert(one.value); // {value: 1, done: false}
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+class Animal {
+  constructor(name) {
+    this.speed = 0;
+    this.name = name;
+  }
+  run(speed) {
+    this.speed += speed;
+    alert(`${this.name} runs with speed ${this.speed}.`);
+  }
+  stop() {
+    this.speed = 0;
+    alert(`${this.name} stopped.`);
+  }
+}
+
+// Inherit from Animal by specifying "extends Animal"
+class Rabbit extends Animal {
+  hide() {
+    alert(`${this.name} hides!`);
+  }
+}
+
+let rabbit = new Rabbit("White Rabbit");
+
+rabbit.run(5); // White Rabbit runs with speed 5.
+rabbit.hide(); // White Rabbit hides!
+</script>
+
+
+
+<!DOCTYPE html><script>
+function f() { return "sayHi"; }
+
+class User {
+  [f()]() {
+    alert("Hello");
+  }
+
+}
+
+new User().sayHi();
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+// animal has methods
+let animal = {
+  walk() {
+    if (!this.isSleeping) {
+      alert(`I walk`);
+    }
+  },
+  sleep() {
+    this.isSleeping = true;
+  }
+};
+
+let rabbit = {
+  name: "White Rabbit",
+  __proto__: animal
+};
+
+// modifies rabbit.isSleeping
+rabbit.sleep();
+
+alert(rabbit.isSleeping); // true
+alert(animal.isSleeping); // undefined (no such property in the prototype)
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+let user = {
+  name: "John",
+  surname: "Smith",
+
+  set fullName(value) {
+    [this.name, this.surname] = value.split(" ");
+  },
+
+  get fullName() {
+    return `${this.name} ${this.surname}`;
+  }
+};
+
+let admin = {
+  __proto__: user,
+  isAdmin: true
+};
+admin.fullName = "Alice Cooper";
+alert(admin.fullName); // John Smith (*)
+
+// setter triggers!
+ // (**)
+</script>
+
+
+
+<!DOCTYPE html><script>
+let user = {
+  name: "John",
+  money: 1000,
+
+  [Symbol.toPrimitive](hint) {
+    alert(`hint: ${hint}`);
+    return hint == "string" ? `{name: "${this.name}"}` : this.money;
+  }
+};
+
+// conversions demo:
+alert(user); // hint: string -> {name: "John"}
+alert(+user); // hint: number -> 1000
+alert(user + 500); // hint: default -> 1500
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+let user = {
+  name: "John",
+  money: 1000,
+
+  [Symbol.toPrimitive](hint) {
+    alert(`hint: ${hint}`);
+    return hint == "string" ? `{name: "${this.name}"}` : this.money;
+  }
+};
+
+// conversions demo:
+alert(user); // hint: string -> {name: "John"}
+alert(+user); // hint: number -> 1000
+alert(user + 500); // hint: default -> 1500
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+let fruit = prompt("Which fruit to buy?", "mango");
+
+let bag = {
+  [fruit]: 5, // the name of the property is taken from the variable fruit
+};
+
+alert( bag.mango ); // 5 if fruit="apple"
+alert(bag[fruit])
+</script>
+
+
+
+<!DOCTYPE html><script>
+function User(name, birthday) {
+  this.name = name;
+  this.birthday = birthday;
+
+  // age is calculated from the current date and birthday
+  Object.defineProperty(this, "age", {
+    get() {
+      let todayYear = new Date().getFullYear();
+      return todayYear - this.birthday.getFullYear();
+    }
+  });
+}
+
+let john = new User("John", new Date(1992, 6, 1));
+
+alert( john.birthday ); // birthday is available
+alert( john.age );      // ...as well as the age
+</script>
+
+
+
+<!DOCTYPE html><script>
+function curry(f) { // curry(f) does the currying transform
+  return function(a) {
+    return function(b) {
+      return function(c){
+        return f(a, b, c);
+      };
+    };
+  };
+}
+var abc = function(a, b, c) {
+  return a + b + c;
+};
+ 
+var curried = curry(abc);
+alert(curried(1)(3)(5))
+
+</script>
+
+
+
+<!DOCTYPE html><script>
+let user = {
+  firstName: "John",
+  sayHi() {
+    alert(`Hello, ${this.firstName}!`);
+  }
+};
+
+let sayHi = user.sayHi.bind(user); // (*)
+
+sayHi(); // Hello, John!
+
+setTimeout(sayHi, 1000); // Hello, John!
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+let timerId = setTimeout(() => alert("never happens"), 1000);
+alert(timerId); // timer identifier
+
+clearTimeout(timerId);
+alert(timerId); // same identifier (doesn't become null after canceling)
+</script>
+
+
+
+<!DOCTYPE html><script>
+function getFunc() {
+  
+
+  let func = function() { alert(value); };
+  value = "test";
+
+  return func;
+}
+
+var nvan = getFunc();
+
+// "test", from the Lexical Environment of getFunc
+</script>
+
+
+
+<!DOCTYPE html><script>
+function makeCounter() {
+  // instead of:
+  // let count = 0
+  
+  function counter() {
+    alert(counter.count++) ;
+  };
+
+  counter.count = 0;
+
+  return counter;
+}
+
+let counter = makeCounter();
+//alert( counter() ); // 0
+//alert( counter() ); // 1
+
+counter()
+counter()
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+function getFunc() {
+  
+
+  let func = function() { alert(value); };
+  let value = "test";
+
+  return func;
+}
+
+var nvan = getFunc();
+nvan();
+nvan();
+// "test", from the Lexical Environment of getFunc
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+let sayHi = function func(who) {
+  if (who) {
+    alert(`Hello, ${who}`);
+  } else {
+    func("Guest"); // use func to re-call itself
+  }
+};
+
+sayHi(); // Hello, Guest
+alert(sayHi.name)
+// But this won't work:
+func(); // Error, func is not defined (not visible outside of the function)
+</script>
+
+
+
+<!DOCTYPE html><script>
+function makeCounter() {
+
+  function counter() {
+    return counter.count++;
+  };
+
+  counter.count = 0;
+  alert(counter.count)
+  return counter;
+}
+
+let counter = makeCounter();
+alert( counter() ); // 0
+alert( counter() ); // 1
+</script>
+
+
+
+<!DOCTYPE html><script>
+function ask(question, ...handlers) {
+  let isYes = confirm(question);
+
+  for(let handler of handlers) {
+    alert(handler.length)
+    if (handler.length == 0) {
+      if (isYes) handler();
+    } else {
+      handler(isYes);
+    }
+  }
+
+}
+
+// for positive answer, both handlers are called
+// for negative answer, only the second one
+ask("Question?", () => alert('You said yes'), result => alert(result));
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+var sayHi = function(...a) {
+  alert("Hi");
+}
+
+alert(sayHi.name); // sayHi
+alert(sayHi.length)
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+if (window.Promise) {
+  alert(window.Promise) // custom implementation of the modern language feature
+}
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+function sayHi() {
+  if (true) {
+    var phrase = "Hello";
+  }
+
+  alert(phrase); // works
+}
+
+sayHi();
+alert(phrase); // Error: phrase is not defined (Check the Developer Console)
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+// Try to declare and immediately call a function
+function() { // <-- Error: Unexpected token (
+
+  let message = "Hello";
+
+  alert(message); // Hello
+
+}();
+</script>
+
+
+
+<!DOCTYPE html><script>
+// constructor function returns a new object
+function User(name) {
+
+  // the object method is created as a nested function
+  this.sayHi = function() {
+    alert(name);
+  };
+}
+
+let user = new User("John");
+user.sayHi(); // the method "sayHi" code has access to the outer "name"
+</script>
+
+
+
+<!DOCTYPE html><script>
+function showName(NAME) {
+  alert(NAME)
+  alert( arguments.length );
+  alert( arguments[0] );
+  alert( arguments[1] );
+
+  // it's iterable
+  // for(let arg of arguments) alert(arg);
+}
+
+// shows: 2, Julius, Caesar
+showName("Julius", "Caesar");
+
+// shows: 1, Ilya, undefined (no second argument)
+showName("Ilya");
+</script>
+
+
+
+
+<!DOCTYPE html><script>
+function showName(firstName, lastName, ...titles) {
+  alert( firstName + ' ' + lastName ); // Julius Caesar
+
+  // the rest go into titles array
+  // i.e. titles = ["Consul", "Imperator"]
+  alert( titles[0] ); // Consul
+  alert( titles[1] ); // Imperator
+  alert( titles.length ); // 2
+}
+
+showName("Julius", "Caesar", "Consul", "Imperator",'KABOOTAR');
+</script>
+
+
+
+<!DOCTYPE html><script>
+let company = { // the same object, compressed for brevity
+  sales: [{name: 'John', salary: 1000}, {name: 'Alice', salary: 600 }],
+  development: {
+    sites: [{name: 'Peter', salary: 2000}, {name: 'Alex', salary: 1800 }],
+    internals: [{name: 'Jack', salary: 1300}]
+  }
+};
+
+// The function to do the job
+function sumSalaries(department) {
+  if (Array.isArray(department)) { // case (1)
+    return department.reduce((prev, current) => prev + current.salary, 0); // sum the array
+  } else { // case (2)
+    let sum = 0;
+    for (let subdep of Object.values(department)) {
+      sum += sumSalaries(subdep); // recursively call for subdepartments, sum the results
+    }
+    return sum;
+  }
+}
+
+alert(sumSalaries(company)); // 6700
+</script>
